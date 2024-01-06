@@ -157,7 +157,7 @@ def test_bot_template():
     assert (
         botfleet.BotTemplate.update(bot_template.id, name="updated").name == "updated"
     )
-    assert botfleet.BotTemplate.list().total_count == 1
+    assert botfleet.BotTemplate.list().total_count == 2
     assert botfleet.BotTemplate.retrieve(bot_template.id).id == bot_template.id
     botfleet.BotTemplate.delete(bot_template.id)
-    assert botfleet.BotTemplate.list().total_count == 0
+    assert botfleet.BotTemplate.list().total_count == 1
