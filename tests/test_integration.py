@@ -66,6 +66,46 @@ def test_bot(prepare_and_teardown):
     assert botfleet.Bot.list().total_count == 1
 
 
+def test_create_bot_from_template(prepare_and_teardown):
+    data = prepare_and_teardown
+
+    bot_template = botfleet.BotTemplate.create(
+        name="test",
+        description="test",
+        script="def main():\n    print('hello world')\n",
+        requirements="requests",
+        env_vars="FOO=BAR",
+        python_version="3.9",
+        public=True,
+    )
+
+    bot = botfleet.Bot.create_from_template(
+        template_id=bot_template.id, store_id=data["store_id"]
+    )
+    assert bot.name == "test"
+    assert bot.script == "def main():\n    print('hello world')\n"
+    assert bot.requirements == "requests"
+    assert bot.env_vars == "FOO=BAR"
+    assert bot.python_version == "3.9"
+    assert bot.store_id == data["store_id"]
+
+    bot = botfleet.Bot.create_from_template(
+        template_id=bot_template.id,
+        store_id=data["store_id"],
+        name="test2",
+        script="def main():\n    ...",
+        requirements="",
+        env_vars="",
+        python_version="3.10",
+    )
+    assert bot.name == "test2"
+    assert bot.script == "def main():\n    ..."
+    assert bot.requirements == ""
+    assert bot.env_vars == ""
+    assert bot.python_version == "3.10"
+    assert bot.store_id == data["store_id"]
+
+
 def test_execute_bot(prepare_and_teardown):
     data = prepare_and_teardown
 

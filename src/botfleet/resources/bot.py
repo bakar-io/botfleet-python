@@ -1,12 +1,13 @@
 import asyncio
 import json
 from dataclasses import dataclass
-from typing import Literal, Union
+from typing import Literal, Optional, Union
 
 from botfleet._client import Client
 from botfleet.pagination import PagePaginatedResource
 from botfleet.resources._base import Resource
 from botfleet.resources.bot_executor_job import BotExecutorJob
+from botfleet.resources.bot_template import BotTemplate
 from botfleet.resources.execution import Execution
 from botfleet.types import JSON
 
@@ -55,6 +56,49 @@ class Bot(Resource):
         requirements: str = "",
         env_vars: str = "",
     ) -> "Bot":
+        r = Client.request_action(
+            "POST",
+            f"{cls.api_source()}/create/",
+            data={
+                "name": name,
+                "script": script,
+                "requirements": requirements,
+                "env_vars": env_vars,
+                "python_version": python_version,
+                "store_id": store_id,
+            },
+        )
+        return cls(**r.json())
+
+    @classmethod
+    def create_from_template(
+        cls,
+        template_id: str,
+        store_id: str,
+        name: Optional[str] = None,
+        script: Optional[str] = None,
+        python_version: Optional[Literal["3.9", "3.10", "3.11", "3.12"]] = None,
+        requirements: Optional[str] = None,
+        env_vars: Optional[str] = None,
+    ) -> "Bot":
+        """
+        Allows overriding the following fields: `name`, `script`, `requirements`,
+        `env_vars`, `python_version`.
+        """
+        bot_template = BotTemplate.retrieve(template_id)
+
+        name = name if name is not None else bot_template.name
+        script = script if script is not None else bot_template.script
+        requirements = (
+            requirements if requirements is not None else bot_template.requirements
+        )
+        env_vars = env_vars if env_vars is not None else bot_template.env_vars
+        python_version = (
+            python_version
+            if python_version is not None
+            else bot_template.python_version
+        )
+
         r = Client.request_action(
             "POST",
             f"{cls.api_source()}/create/",

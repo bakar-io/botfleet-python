@@ -9,7 +9,7 @@ from botfleet.resources.build import Build  # noqa: E402, F401
 from botfleet.resources.execution import Execution  # noqa: E402, F401
 from botfleet.resources.store import Store  # noqa: E402, F401
 
-__version__ = "0.0.23"
+__version__ = "0.1.0"
 
 api_base = "api.botfleet.ai"
 api_key = None
